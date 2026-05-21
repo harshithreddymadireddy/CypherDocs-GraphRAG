@@ -4,6 +4,8 @@ CypherDocs is an enterprise-grade Graph Retrieval-Augmented Generation (GraphRAG
 
 The system ingests documents, splits them into overlapping passages, generates embeddings, extracts entity-relationship networks using structured LLM schemas, and builds a unified knowledge graph. At query time, it traverses graph neighbors alongside vector search results to construct highly explainable, context-rich answers.
 
+![Image Alt](https://github.com/harshithreddymadireddy/CypherDocs-GraphRAG/blob/6669033550a5b0427779a744b79b2e56323c55d8/Assets/Images%3Avideo/Dashboard.png)
+
 ---
 
 ## Key Features
