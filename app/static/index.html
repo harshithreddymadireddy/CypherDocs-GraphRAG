@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CypherDocs</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Force Graph CDN -->
+    <script src="https://unpkg.com/force-graph"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-circle-nodes"></i>
+                </div>
+                <div class="brand-name">
+                    <h2>CypherDocs</h2>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#query" class="nav-item active" id="nav-query">
+                    <i class="fa-solid fa-comment-nodes"></i>
+                    <span>Query Workspace</span>
+                </a>
+                <a href="#ingestion" class="nav-item" id="nav-ingestion">
+                    <i class="fa-solid fa-file-import"></i>
+                    <span>Document Ingestion</span>
+                </a>
+                <a href="#explorer" class="nav-item" id="nav-explorer">
+                    <i class="fa-solid fa-network-wired"></i>
+                    <span>Graph Explorer</span>
+                </a>
+                <a href="#stats" class="nav-item" id="nav-stats">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Platform Analytics</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="api-status">
+                    <span class="status-indicator online"></span>
+                    <span>Neo4j Connected</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="page-title">
+                    <h1 id="current-panel-title">Query Workspace</h1>
+                    <p id="current-panel-subtitle">Ask questions across unstructured docs using vector and graph intelligence</p>
+                </div>
+                <div class="header-actions">
+                    <!-- Entities count (network representation) -->
+                    <div class="metric-badge">
+                        <i class="fa-solid fa-tags text-purple"></i>
+                        <span id="header-entity-count">0</span> Entities
+                    </div>
+                    
+                    <!-- Docs Dropdown Widget -->
+                    <div class="dropdown-wrapper">
+                        <button class="header-btn" id="btn-docs-dropdown">
+                            <i class="fa-solid fa-file-lines text-cyan"></i>
+                            <span id="header-doc-count">0</span> Docs
+                            <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                        </button>
+                        <div class="solid-dropdown" id="docs-dropdown">
+                            <div class="dropdown-header">
+                                <h4>Active Documents in RAG</h4>
+                            </div>
+                            <div class="dropdown-body" id="docs-dropdown-list">
+                                <div class="dropdown-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="#ingestion" class="btn btn-secondary btn-sm" id="btn-goto-ingestion"><i class="fa-solid fa-file-import"></i> Manage Ingestion</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Share Dropdown Widget -->
+                    <div class="dropdown-wrapper">
+                        <button class="header-btn" id="btn-share-dropdown">
+                            <i class="fa-solid fa-share-nodes text-purple"></i>
+                            <span>Share</span>
+                            <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                        </button>
+                        <div class="solid-dropdown" id="share-dropdown">
+                            <div class="dropdown-header">
+                                <h4>Share & Export Workspace</h4>
+                                <p>Use this panel to share your current search session or export RAG data for external analysis.</p>
+                            </div>
+                            <div class="dropdown-body share-actions">
+                                <button class="share-option-btn" id="btn-copy-share-link">
+                                    <div class="option-icon"><i class="fa-solid fa-link"></i></div>
+                                    <div class="option-text">
+                                        <h5>Copy Workspace URL</h5>
+                                        <p>Share a link to access this CypherDocs workspace.</p>
+                                    </div>
+                                </button>
+                                <button class="share-option-btn" id="btn-export-session">
+                                    <div class="option-icon"><i class="fa-solid fa-file-code"></i></div>
+                                    <div class="option-text">
+                                        <h5>Export Query Session</h5>
+                                        <p>Download search query history and answers as Markdown.</p>
+                                    </div>
+                                </button>
+                                <button class="share-option-btn" id="btn-export-graph">
+                                    <div class="option-icon"><i class="fa-solid fa-diagram-project"></i></div>
+                                    <div class="option-text">
+                                        <h5>Export Knowledge Graph</h5>
+                                        <p>Download the active visualization network as JSON.</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Workspace Panels -->
+            <div class="panel-container">
+                
+                <!-- Panel 1: Query Workspace -->
+                <section class="panel active" id="panel-query">
+                    <div class="query-layout">
+                        <!-- Chat & Input Area -->
+                        <div class="chat-container card">
+                            <div class="chat-messages" id="chat-messages">
+                                <div class="message assistant welcome">
+                                    <div class="message-avatar">
+                                        <i class="fa-solid fa-circle-nodes"></i>
+                                    </div>
+                                    <div class="message-body">
+                                        <p>Hello! I am your <strong>CypherDocs Agent</strong>. I combine semantic vector search with knowledge graph traversals to provide relationship-aware answers backed by your document collection.</p>
+                                        <p>Upload documents in the **Document Ingestion** tab, or ask me a query directly if you have already indexed data!</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="query-input-bar">
+                                <form id="query-form" class="input-form">
+                                    <input type="text" id="query-input" placeholder="Ask a relationship-aware question about the NIFTY 50 index (e.g., 'Which companies were added to Nifty 50 in 2024 and how did the index perform in 2008?')..." autocomplete="off" required>
+                                    <button type="submit" class="btn btn-primary" id="query-submit-btn">
+                                        <span>Ask Agent</span>
+                                        <i class="fa-solid fa-paper-plane"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar Context inspector -->
+                        <div class="context-inspector">
+                            <div class="tabs-header">
+                                <button class="tab-btn active" data-tab="tab-answer">Reasoned Answer</button>
+                                <button class="tab-btn" data-tab="tab-sources">Vector Sources</button>
+                                <button class="tab-btn" data-tab="tab-relationships">Graph Links</button>
+                            </div>
+                            <div class="tabs-content card">
+                                <!-- Answer Panel -->
+                                <div class="tab-pane active" id="tab-answer">
+                                    <div class="empty-state" id="answer-empty">
+                                        <i class="fa-solid fa-brain"></i>
+                                        <p>Ask a query to generate an explainable answer supported by document fragments and graph paths.</p>
+                                    </div>
+                                    <div class="answer-display markdown-body hidden" id="answer-display">
+                                        <!-- Will be filled by JS -->
+                                    </div>
+                                </div>
+                                <!-- Vector Sources Panel -->
+                                <div class="tab-pane" id="tab-sources">
+                                    <div class="empty-state" id="sources-empty">
+                                        <i class="fa-solid fa-file-lines"></i>
+                                        <p>Semantic vector retrieval results will appear here.</p>
+                                    </div>
+                                    <div class="sources-list hidden" id="sources-list">
+                                        <!-- Will be filled by JS -->
+                                    </div>
+                                </div>
+                                <!-- Graph Context Panel -->
+                                <div class="tab-pane" id="tab-relationships">
+                                    <div class="empty-state" id="graph-empty">
+                                        <i class="fa-solid fa-diagram-project"></i>
+                                        <p>Traversed knowledge graph relationships will appear here.</p>
+                                    </div>
+                                    <div class="relationships-list hidden" id="relationships-list">
+                                        <!-- Will be filled by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Panel 2: Document Ingestion -->
+                <section class="panel" id="panel-ingestion">
+                    <div class="ingestion-grid">
+                        <!-- Upload Card -->
+                        <div class="card upload-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-cloud-arrow-up text-cyan"></i> Ingest New Documents</h3>
+                                <p>Supports PDF, DOCX, TXT, and Markdown files. Documents are parsed, chunked, embedded, and mapped to the graph database automatically.</p>
+                            </div>
+                            <div class="drag-drop-area" id="drop-zone">
+                                <i class="fa-solid fa-file-pdf file-icon-huge"></i>
+                                <p>Drag & Drop your files here or <span class="file-browse">browse files</span></p>
+                                <input type="file" id="file-input" multiple accept=".pdf,.docx,.doc,.txt,.md" style="display: none;">
+                            </div>
+                            <div class="upload-progress-list" id="upload-progress-list">
+                                <!-- Upload progression items will render here -->
+                            </div>
+                        </div>
+
+                        <!-- Documents Status Table -->
+                        <div class="card doc-table-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-folder-open text-purple"></i> Ingested Knowledge Sources</h3>
+                                <p>Monitor index status, chunk breakdown, and logs for your document corpus.</p>
+                            </div>
+                            <div class="table-container">
+                                <table class="doc-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Filename</th>
+                                            <th>Status</th>
+                                            <th>Chunks</th>
+                                            <th>Created At</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="document-table-body">
+                                        <tr>
+                                            <td colspan="5" class="table-empty">
+                                                <i class="fa-solid fa-spinner fa-spin"></i> Loading documents...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Panel 3: Graph Explorer -->
+                <section class="panel" id="panel-explorer">
+                    <div class="explorer-layout">
+                        <!-- Graph Visualizer -->
+                        <div class="card graph-card">
+                            <div class="graph-toolbar">
+                                <div class="toolbar-left">
+                                    <button class="btn btn-secondary btn-sm" id="btn-refresh-graph">
+                                        <i class="fa-solid fa-rotate"></i> Refresh
+                                    </button>
+                                    <div class="graph-search-container">
+                                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                        <input type="text" id="graph-search-input" placeholder="Search nodes by name..." autocomplete="off">
+                                        <button type="button" id="btn-clear-graph-search" class="clear-search-btn"><i class="fa-solid fa-xmark"></i></button>
+                                    </div>
+                                </div>
+                                <div class="filter-dropdown-container" id="filter-dropdown-container">
+                                    <button class="btn btn-secondary btn-sm filter-dropdown-btn" id="btn-filter-dropdown" type="button">
+                                        <i class="fa-solid fa-filter"></i> Filter Types <i class="fa-solid fa-chevron-down" style="font-size: 0.8em; margin-left: 6px;"></i>
+                                    </button>
+                                    <div class="filter-dropdown-content" id="filter-dropdown-content">
+                                        <div class="filter-dropdown-header">
+                                            <span>Entity Types</span>
+                                            <div class="filter-dropdown-actions">
+                                                <button type="button" class="btn-filter-action" id="btn-filter-select-all">All</button>
+                                                <button type="button" class="btn-filter-action" id="btn-filter-clear">None</button>
+                                            </div>
+                                        </div>
+                                        <div class="filter-dropdown-list" id="filter-dropdown-list">
+                                            <!-- Dynamic Filter checkboxes will be injected here -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="toolbar-right">
+                                    <div class="graph-doc-select-container">
+                                        <i class="fa-solid fa-file-lines doc-select-icon"></i>
+                                        <select id="graph-doc-select" class="toolbar-select">
+                                            <option value="">All Documents</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="graph-viewport" class="graph-viewport">
+                                <!-- D3/Force Graph Canvas will inject here -->
+                            </div>
+                        </div>
+
+                        <!-- Sidebar Node Inspector -->
+                        <div class="card inspector-card" id="inspector-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-circle-info text-cyan"></i> Graph Element Inspector</h3>
+                                <p>Click on any entity node or relationship edge in the visualization to inspect properties.</p>
+                            </div>
+                            <div class="inspector-content" id="inspector-content">
+                                <div class="inspector-empty">
+                                    <i class="fa-solid fa-hand-pointer"></i>
+                                    <p>Select a node or edge in the graph to view descriptions, types, and document connections.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Panel 4: Platform Analytics -->
+                <section class="panel" id="panel-stats">
+                    <div class="stats-dashboard">
+                        <!-- Summary Cards -->
+                        <div class="stats-summary-grid">
+                            <div class="card stats-card">
+                                <div class="stats-icon text-cyan bg-cyan-dim"><i class="fa-solid fa-file-invoice"></i></div>
+                                <div class="stats-data">
+                                    <h4 id="stat-docs">0</h4>
+                                    <span>Indexed Documents</span>
+                                </div>
+                            </div>
+                            <div class="card stats-card">
+                                <div class="stats-icon text-purple bg-purple-dim"><i class="fa-solid fa-cubes"></i></div>
+                                <div class="stats-data">
+                                    <h4 id="stat-chunks">0</h4>
+                                    <span>Document Chunks</span>
+                                </div>
+                            </div>
+                            <div class="card stats-card">
+                                <div class="stats-icon text-emerald bg-emerald-dim"><i class="fa-solid fa-tags"></i></div>
+                                <div class="stats-data">
+                                    <h4 id="stat-entities">0</h4>
+                                    <span>Extracted Entities</span>
+                                </div>
+                            </div>
+                            <div class="card stats-card">
+                                <div class="stats-icon text-rose bg-rose-dim"><i class="fa-solid fa-arrows-spin"></i></div>
+                                <div class="stats-data">
+                                    <h4 id="stat-rels">0</h4>
+                                    <span>Extracted Relationships</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Breakdowns -->
+                        <div class="stats-charts-grid">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3>Entity Distribution by Type</h3>
+                                </div>
+                                <div class="breakdown-list" id="entity-type-breakdown">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3>Relationship Distribution</h3>
+                                </div>
+                                <div class="breakdown-list" id="relationship-type-breakdown">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+    
+    <!-- Custom JS -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
