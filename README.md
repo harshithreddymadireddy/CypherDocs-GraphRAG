@@ -124,7 +124,7 @@ http://localhost:8000
 1. **Upload Documents**: Go to the **Document Ingestion** tab. Select or drag-and-drop multiple documents (PDFs, text reports, legal agreements). The files will queue and display processing statuses.
 ![Image Alt](https://github.com/harshithreddymadireddy/CypherDocs-GraphRAG/blob/e9ff52ecb96996b914bab030722993eb430f4fb9/Assets/Images%3Avideo/Document_ingestion.jpeg)
 2. **Visualize Graph**: Go to the **Graph Explorer** tab. Once status shows `completed`, click **Refresh Graph** to load the force-directed network nodes. Click on individual nodes or relationships to view property details in the inspector.
-![Image Alt](https://github.com/harshithreddymadireddy/CypherDocsGraphRAG/blob/e9ff52ecb96996b914bab030722993eb430f4fb9/Assets/Images%3Avideo/Graph_Explorer_Files.jpeg)
+![Image Alt](https://github.com/harshithreddymadireddy/CypherDocs-GraphRAG/blob/e9ff52ecb96996b914bab030722993eb430f4fb9/Assets/Images%3Avideo/Graph_Explorer_Files.jpeg)
 3. **Ask Queries**: Go to the **Query Workspace** tab. Enter questions (e.g. *"Which companies were added to the NIFTY 50 index in 2025?"*). The assistant will generate a synthesized answer, citing document passages under the **Vector Sources** tab and graph connections under the **Graph Links** tab.
 ![Image Alt](https://github.com/harshithreddymadireddy/CypherDocs-GraphRAG/blob/e9ff52ecb96996b914bab030722993eb430f4fb9/Assets/Images%3Avideo/Query.jpeg)
 
